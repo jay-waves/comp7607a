@@ -16,7 +16,7 @@ cargo build --locked
 
 All LoopGuard options precede `--command`. Default database: `trace.sqlite`. Default child runtime limit: 300 seconds, configurable with `--timeout-secs`. Without `--command`, stdin is recorded until EOF and no process is interrupted. `--request-stop` emits advisory stop requests; `--enforce` actually terminates the owned child and requires `--command`.
 
-stdout contains one JSON decision per input line. stderr contains the final JSON summary and, in command mode, inherited harness stderr. Exit codes: 0 for successful observation, 1 for errors/child failure, 2 for detector or timeout interruption. Records are committed before an intervention. Linux/macOS cancellation uses SIGKILL on the owned process group; it is abrupt, does not roll back file edits, and cannot stop descendants that escape that group. Windows process-tree cancellation is not supported by this release.
+stdout contains one JSON decision per input line. stderr contains the final JSON summary and, in command mode, inherited harness stderr. Exit codes: 0 for successful observation, 1 for errors/child failure, 2 for detector or timeout interruption. Records are committed before an intervention. Linux/macOS cancellation uses SIGKILL on the owned process group; it is abrupt, does not roll back file edits, and cannot stop descendants that escape that group. On Windows, cancellation terminates only the direct child; descendants may continue running.
 
 ## Detection and measurements
 
@@ -49,7 +49,7 @@ cargo build --locked
 python3 tests/smoke.py
 ```
 
-CI runs these checks on Linux and macOS. Pushing a `v*` tag builds Linux x86_64 and macOS ARM64 archives, including bundled SQLite, and publishes them with SHA-256 checksums to GitHub Releases. Linux builds use the runner's glibc and are not guaranteed compatible with older distributions. Publication is configured but has not been executed locally.
+CI runs these checks on Linux, macOS, and Windows. Pushing a `v*` tag builds Linux x86_64, macOS ARM64, and Windows x86_64 archives, including bundled SQLite, and publishes them with SHA-256 checksums to GitHub Releases. Linux builds use the runner's glibc and are not guaranteed compatible with older distributions. Publication is configured but has not been executed locally.
 
 See [proposal](proposal.md) and [experiment plan](docs/experiments.md). Codex stream reference: [official non-interactive mode documentation](https://learn.chatgpt.com/docs/non-interactive-mode).
 

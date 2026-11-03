@@ -6,10 +6,11 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 import sqlite3
 import subprocess
+import sys
 import tempfile
 import unittest
 
-BIN = str(Path('target/debug/loopguard').resolve())
+BIN = str(Path('target/debug/loopguard.exe' if os.name == 'nt' else 'target/debug/loopguard').resolve())
 
 class Smoke(unittest.TestCase):
     def run_trace(self, *args, data=None):
@@ -74,14 +75,14 @@ class Smoke(unittest.TestCase):
         self.assertEqual(db.execute('select count(*) from events').fetchone()[0], 4)
 
     def test_stop_child(self):
-        p, db = self.run_trace('--enforce', '--command', 'python3', 'examples/fake_agent.py')
+        p, db = self.run_trace('--enforce', '--command', sys.executable, 'examples/fake_agent.py')
         self.assertEqual(p.returncode, 2, p.stderr)
         summary = json.loads(db.execute('select summary from summaries').fetchone()[0])
         self.assertTrue(summary['interrupted'])
         self.assertEqual(summary['tool_calls'], 3)
 
     def test_timeout_without_events(self):
-        p, _ = self.run_trace('--timeout-secs', '1', '--command', 'python3', '-c', 'import time; time.sleep(20)')
+        p, _ = self.run_trace('--timeout-secs', '1', '--command', sys.executable, '-c', 'import time; time.sleep(20)')
         self.assertEqual(p.returncode, 2, p.stderr)
         self.assertEqual(json.loads(p.stderr)['reason'], 'hard_timeout')
 
@@ -92,7 +93,7 @@ class Smoke(unittest.TestCase):
         self.assertIn('parse_error', json.loads(p.stdout.splitlines()[0])['decision'])
 
     def test_child_failure(self):
-        p, _ = self.run_trace('--command', 'python3', '-c', 'raise SystemExit(7)')
+        p, _ = self.run_trace('--command', sys.executable, '-c', 'raise SystemExit(7)')
         self.assertEqual(p.returncode, 1)
         self.assertEqual(json.loads(p.stderr)['child_exit_code'], 7)
 
