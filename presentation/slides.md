@@ -2,7 +2,7 @@
 
 # LoopGuard
 
-## Detecting Unproductive Agent Execution
+## Redirecting Stalled Agent Execution
 
 Local-first monitoring · selective intervention · measurable tradeoffs
 
@@ -13,7 +13,7 @@ This presentation describes an implemented monitoring method and a planned evalu
 
 # Selective interruption under uncertainty
 
-Can a lightweight monitor reduce wasted agent execution **without harming task success**?
+Can a lightweight monitor redirect stalled execution toward **useful progress**?
 
 - Coding agents can repeat failed actions or revisit unchanged results.
 - Fixed budgets limit cost, but cannot distinguish useful retries from waste.
@@ -28,7 +28,7 @@ Evaluate the tradeoff rather than assuming every repetition is a loop.
 
 - Python CLI + SQLite; dependencies and execution managed with uv.
 - Single-agent Codex tasks; Codex JSONL and a generic event schema.
-- Compare interruption policies under partial observability.
+- Compare intervention timing and actions under partial observability.
 - Outside core scope: dashboards, fine-tuning, multi-agent coordination and a second full harness.
 
 ---
@@ -51,7 +51,7 @@ Evaluate the tradeoff rather than assuming every repetition is a loop.
 | Cursor Agent CLI | Headless workflow comparison | Candidate; adapter pending |
 
 Notes:
-Core evaluation remains single-agent Codex. Candidates are an extension agenda, not implemented integrations or an expansion of the 108-run protocol. Official descriptions: https://www.deepseek.com/harness/en/ ; https://x.ai/build ; https://cursor.com/docs/cli/overview . Telemetry, permissions and cancellation semantics require validation before comparison.
+Core evaluation remains single-agent Codex. Candidates are an extension agenda, not implemented integrations or part of the initial pilot. Official descriptions: https://www.deepseek.com/harness/en/ ; https://x.ai/build ; https://cursor.com/docs/cli/overview . Telemetry, permissions and cancellation semantics require validation before comparison.
 
 ---
 
@@ -198,105 +198,66 @@ The collector awaits the judge response while the child continues running. A res
 
 ---
 
-# Evaluation protocol
+# Experiment: when and how to intervene
 
-| Condition | Intervention policy |
-| --- | --- |
-| A · Budget | Stop only at runtime limit |
-| B · Rules | Budget + repetition-based interruption |
-| C · Decision model | Budget + model-confirmed repetition interruption |
+| Stage | Hold fixed | Compare |
+| --- | --- | --- |
+| How | Trigger, model, initial effort | Continue; increase thinking; reduce thinking; restart context |
+| When | Action selected on development tasks | No intervention; signal rules; rules + judge |
 
-Replay evaluates detection. Fresh live runs measure realized savings.
+All attempts and judge calls share one total budget.
+
+Notes:
+This two-stage experiment is planned, not implemented. Select the action on separate development tasks and freeze it for the timing comparison.
 
 ---
 
-# Evaluation pipeline
+# Planned intervention flow
 
 ```mermaid
 flowchart LR
-  D[6 development tasks] --> F[Freeze settings]
-  F --> T[12 held-out tasks]
-  T --> A[A: budget]
-  T --> B[B: rules]
-  T --> C[C: model-confirmed]
-  A --> R[3 runs / condition]
-  B --> R
-  C --> R
-  R --> S[Success + resource use]
-  R --> N[Annotated detection metrics]
-  S --> U[Task-level analysis]
-  N --> U
+  O[Observe execution] --> T{Signal trigger?}
+  T -->|No / unknown| C[Continue]
+  T -->|Yes| G{Optional Jev gate?}
+  G -->|Enabled| J{Confirm?}
+  J -->|No / failure| C
+  J -->|Yes| A{Assigned action}
+  G -->|Disabled| A
+  A --> H[Increase thinking]
+  A --> L[Reduce thinking]
+  A --> R[Restart context]
+  A --> C
 ```
 
 Notes:
-Planned protocol, not completed experiments. Fix agent, prompts, permissions and budgets; reset repository snapshots and randomize condition order. Replay supports detector analysis, whereas fresh live runs measure realized savings.
+These are experimental arms, not a learned action selector. Metric triggers, intervention judgment, effort controls and context restart are planned.
 
 ---
 
-# Sampling and experimental control
+# Signals and restart
 
-- Calibrate on **6 development tasks**, then freeze settings.
-- Evaluate **12 held-out tasks × 3 runs × 3 conditions = 108 runs** for one judge model.
-- A/B pilot: 72 runs. Each additional judge model: 36 runs.
-- Include coding, loops, legitimate retries and slow successful operations.
+- Repetition, sustained TPS decline or abrupt context growth may trigger checks.
+- Missing metrics remain unknown; signals alone do not prove failure.
+- Restart keeps goal, code, failure summary and next hypothesis.
+- Reasoning controls require model support; restart does not reset the budget.
 
 Notes:
-Fix agent, prompts, permissions and budgets; reset repository snapshots, use executable success checks and randomize condition order.
+Current Codex telemetry does not supply reliable generation TPS or context snapshots. Do not infer context from cumulative usage or count tool waits as generation time.
 
 ---
 
-# Outcomes and annotation
+# Tasks and measurements
 
-| Measure | Purpose |
+| Task pair | Contrast |
 | --- | --- |
-| Task success / false stops | Harm to productive work |
-| Tokens / time / tool calls | Savings including judge overhead |
-| Precision / recall / delay | Agreement with annotated segments |
-| Cancellation failures | Whether interruption takes effect |
+| Service | Recovers / remains unavailable |
+| Requirements | Consistent / contradictory |
+| Code | Broken / already correct |
 
-Two annotators label baseline segments and earliest defensible intervention.
-
-Notes:
-Report agreement and uncertain labels. Judge predictions are not ground truth. Report per-task results and task-level bootstrap intervals; runs are imperfect counterfactuals.
-
----
-
-# Analysis framework
-
-- Measure resource use jointly with task success and false interruptions.
-- Report per-task estimates and task-level bootstrap intervals.
-- Separate replay detection accuracy from savings in fresh live runs.
-- Treat the following charts as **synthetic illustrations**, not findings.
+Measure task success and total cost, including judge and all attempts. Report recovery and harmful interventions; review blocker reports.
 
 Notes:
-The protocol is planned. The small sample cannot establish statistical non-inferiority. Judge predictions are not ground truth.
-
----
-
-# Token use across policies
-
-<!-- widget: tokens -->
-
-Notes:
-Fabricated values: A 40k, B 26k, C 31k. These are layout fixtures, not findings or a forecast.
-
----
-
-# Success and interruption tradeoffs
-
-<!-- widget: quality -->
-
-Notes:
-Fabricated percentages; no sample size or confidence interval is claimed. Success and false-stop rates are separate illustrative metrics.
-
----
-
-# When repeated effort ends
-
-<!-- widget: timeline -->
-
-Notes:
-Synthetic trajectories flatten when the illustrative policy stops tool execution. They are not replay traces.
+Six configurations, three repetitions per condition. Calibrate on separate development variants and randomize condition order. Replay cannot establish outcomes after restart or thinking changes; fresh live runs are needed.
 
 ---
 
@@ -304,7 +265,8 @@ Synthetic trajectories flatten when the illustrative policy stops tool execution
 
 - Implemented: event adapters, SQLite tracing, repetition rules and explicit interruption.
 - Decision-model adapters have mock coverage; live inference remains unverified.
-- Held-out evaluation has not been conducted.
+- Metric triggers, reasoning-effort controls and context restart are planned.
+- Live agent evaluation has not been conducted.
 - Resource savings and effects on task success remain **unknown**.
 
 ---
@@ -326,8 +288,8 @@ The contribution is an empirical comparison under partial observability, not a u
 LoopGuard separates **observation**, **evidence assessment**, and **intervention** in agent execution.
 
 - A local monitor makes repeated outcomes observable and replayable.
-- Explicit policies govern interruption under incomplete telemetry.
-- Whether selective stopping reduces cost without unacceptable harm remains an empirical question.
+- Experiments separate intervention timing from intervention actions.
+- Whether timely redirection improves success or reduces cost remains an empirical question.
 
 ---
 
@@ -338,4 +300,4 @@ LoopGuard separates **observation**, **evidence assessment**, and **intervention
 - [Provider configuration and CLI usage](https://github.com/jay-waves/comp7607a/blob/main/README.md)
 - [Paul Tol colour schemes](https://sronpersonalpages.nl/~pault/)
 
-<p class="eyebrow">SYNTHETIC CHARTS · NO EMPIRICAL FINDINGS</p>
+<p class="eyebrow">PLANNED EXPERIMENTS · NO EMPIRICAL FINDINGS</p>
