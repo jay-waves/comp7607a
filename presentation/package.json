@@ -1,0 +1,25 @@
+{
+  "name": "loopguard-presentation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "slidev --remote false",
+    "build": "slidev build --base ./",
+    "typecheck": "tsc --noEmit",
+    "export": "slidev export"
+  },
+  "dependencies": {
+    "@slidev/cli": "^52.0.0",
+    "@slidev/theme-default": "^0.25.0",
+    "@visx/scale": "^4.0.0",
+    "@visx/shape": "^4.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.9.0"
+  }
+}

@@ -1,0 +1,67 @@
+/* Paul Tol Muted: palette primitives live only here. */
+:root {
+  --tol-indigo: #332288;
+  --tol-cyan: #88ccee;
+  --tol-teal: #44aa99;
+  --tol-green: #117733;
+  --tol-olive: #999933;
+  --tol-sand: #ddcc77;
+  --tol-rose: #cc6677;
+  --tol-wine: #882255;
+  --tol-purple: #aa4499;
+  --tol-grey: #dddddd;
+  --color-background: #ffffff;
+  --color-text: #202020;
+  --color-primary: var(--tol-indigo);
+  --color-accent: var(--tol-teal);
+  --color-success: var(--tol-green);
+  --color-warning: var(--tol-sand);
+  --color-danger: var(--tol-wine);
+  --color-unknown: var(--tol-grey);
+  --color-border: var(--tol-grey);
+  --color-surface: var(--color-background);
+  --color-on-primary: var(--color-background);
+  --slidev-theme-primary: var(--color-primary);
+}
+.slidev-layout {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: system-ui, sans-serif;
+  font-size: 24px;
+  line-height: 1.5;
+  padding: 48px 56px;
+}
+.slidev-layout h1 { color: var(--color-primary); font-size: 44px; font-weight: 700; }
+.slidev-layout h2 { font-size: 30px; }
+.slidev-layout a { color: var(--color-primary); text-decoration: underline; }
+.panel { border: 2px solid var(--color-border); border-top: 6px solid var(--color-accent); border-radius: 12px; padding: 24px; background: var(--color-surface); }
+.eyebrow { color: var(--color-primary); font-size: 16px; letter-spacing: .08em; }
+.actions { display: flex; gap: 16px; margin-top: 16px; }
+button { background: var(--color-primary); color: var(--color-on-primary); border: 2px solid var(--color-primary); border-radius: 6px; padding: 8px 16px; font: inherit; cursor: pointer; }
+button.secondary { background: var(--color-background); color: var(--color-primary); }
+button:focus-visible { outline: 3px solid var(--color-text); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+.pipeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 28px 0; }
+.pipeline .panel { padding: 16px; font-size: 20px; }
+.slidev-layout table { width: 100%; font-size: 21px; }
+.slidev-layout th { color: var(--color-primary); }
+.slidev-layout th, .slidev-layout td { border-bottom: 1px solid var(--color-border); padding: 10px 12px; }
+:root {
+  --color-series-budget: var(--tol-indigo);
+  --color-series-rules: var(--tol-teal);
+  --color-series-judge: var(--tol-wine);
+  --color-series-false-stop: var(--tol-sand);
+}
+.experiment-chart { margin: 0; }
+.experiment-chart svg { width: 100%; max-height: 320px; overflow: visible; }
+.experiment-chart svg text { fill: var(--color-text); font: 15px system-ui, sans-serif; }
+.chart-grid { stroke: var(--color-border); stroke-width: 1; }
+.simulation-label { color: var(--color-danger); font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+.chart-legend { display: flex; justify-content: center; gap: 24px; font-size: 16px; }
+.chart-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.chart-legend i { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--color-text); }
+.false-stop-key { background: var(--color-series-false-stop); }
+.experiment-chart details { font-size: 14px; margin-top: 8px; }
+.experiment-chart summary { cursor: pointer; color: var(--color-primary); }
+.experiment-chart details[open] { max-height: 110px; overflow: auto; }
+.experiment-chart details table { font-size: 14px; }

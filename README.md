@@ -79,3 +79,11 @@ A rule trigger sends a single `noul` question; stop probability ≥ 0.9 permits 
 Calls are limited to eight per run, spaced by four tool events, with a three-second timeout capped by the remaining runtime. Each sends a deterministic summary capped at 6 KB: grouped patterns from the latest 16 tool events since explicit progress, counts, evidence IDs, and short argument/output excerpts. ANSI colors and line endings are normalized; adjacent duplicate lines are collapsed. Full normalized outcomes determine identity, not truncated excerpts. **Excerpts remain unredacted** and omit the task prompt. Missing progress signals mean unknown, not failure. Summaries are lossy; the exact judge input is logged with each decision, while raw events stay in SQLite. The byte budget is not an exact token count. The collector waits for the response while the child continues.
 
 All providers have mock coverage only. Live inference and Qwen's assumed `answers.stop.noul` response remain unverified.
+
+## Presentation template
+
+`presentation/` is an independent HTML-first Slidev/Markdown subproject with React + TypeScript widgets and global Paul Tol Muted CSS tokens. It uses npm for frontend dependencies; Python remains managed by uv. Its synthetic examples do not add experiments or measured results. See [presentation instructions](presentation/README.md).
+
+The proposal demo deck follows the research question, design, experiments, schedule and references above. `.github/workflows/presentation.yml` validates pull requests and deploys the HTML build to GitHub Pages on `main` after Pages is configured to use GitHub Actions. No measured experiment results are included.
+
+The presentation includes three visx charts (policy token use, success/false-stop rates, and cumulative tool calls) with explicitly fabricated data for layout demonstration. They are not experimental results, predictions, or evidence for the exploratory target.

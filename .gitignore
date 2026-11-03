@@ -3,3 +3,8 @@ __pycache__/
 *.py[cod]
 /dist/
 *.sqlite*
+
+# Local credentials
+.env
+.env.*
+!.env.example
