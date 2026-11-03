@@ -5,9 +5,22 @@ from collections import deque
 FIELDS = set('kind tool arguments result failed progress input_tokens output_tokens context_tokens generation_ms gap_ms'.split())
 
 
-def normalize(v):
+# Capabilities describe adapter evidence, not inferred model behavior.
+CAPABILITIES = {
+    'generic': dict(usage='optional_interval', progress='optional_explicit'),
+    'codex': dict(usage='turn_completed_only', progress='unknown'),
+}
+
+
+def normalize(v, adapter='auto'):
     if not isinstance(v, dict):
         raise ValueError('expected event object')
+    if adapter not in ('auto', *CAPABILITIES):
+        raise ValueError('unknown adapter')
+    if adapter == 'generic' and 'kind' not in v:
+        raise ValueError('generic adapter requires kind')
+    if adapter == 'codex':
+        return normalize_codex(v)
     if 'kind' in v:
         if set(v) - FIELDS or not isinstance(v['kind'], str):
             raise ValueError('invalid generic event')
@@ -18,6 +31,10 @@ def normalize(v):
             if v.get(key) is not None and type(v[key]) is not bool:
                 raise ValueError(f'invalid {key}')
         return v
+    return normalize_codex(v)
+
+
+def normalize_codex(v):
     if v.get('type') == 'turn.completed':
         return normalize(dict(kind='usage', **{k: v.get('usage', {}).get(k) for k in ('input_tokens', 'output_tokens')}))
     if v.get('type') == 'item.completed':

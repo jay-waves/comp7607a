@@ -1,6 +1,6 @@
 [project]
 name = "loopguard"
-version = "0.3.2"
+version = "0.3.3"
 description = "Local agent tracing and wasted-effort detection"
 requires-python = ">=3.11"
 dependencies = ["httpx>=0.28,<1"]

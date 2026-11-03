@@ -1,14 +1,16 @@
-# LoopGuard: Detecting Unproductive Agent Execution
+# LoopGuard: When and How to Intervene in Stalled Agent Execution
 
 *Course project proposal*
 
 ## Research question
 
-Can a lightweight monitor reduce wasted agent execution without harming task success? Coding agents can repeat failed actions or revisit unchanged results. Fixed budgets limit cost; selective interruption may stop waste earlier, but can also disrupt productive retries.
+Can a lightweight monitor identify stalled execution and redirect the remaining budget toward useful progress? We separate **when to intervene** from **how to intervene**: adjusting reasoning effort or restarting context. The objective is higher task success under the same budget, or lower total cost at comparable success. Excessive thinking causing stalls is a hypothesis to test, not an assumed fact.
 
 ## Scope and design
 
-Build a Python CLI managed with uv with SQLite storage, targeting single-agent Codex tasks. A common JSONL schema allows future harness adapters. The intended empirical contribution is a comparison of interruption policies under partial observability. Dashboards, fine-tuning, multi-agent coordination, and a second full harness integration are outside the core scope.
+Build a Python CLI managed with uv with SQLite storage, targeting single-agent Codex tasks. A common JSONL schema allows future harness adapters. The intended empirical contribution is a controlled comparison of intervention timing and intervention actions under partial observability. Dashboards, fine-tuning, multi-agent coordination, and a second full harness integration are outside the core scope.
+
+The current monitoring implementation:
 
 ```mermaid
 flowchart LR
@@ -38,36 +40,54 @@ All three use the same question and trace window. API configuration is documente
 
 ## Experiments
 
-| Condition | Policy |
-| --- | --- |
-| A: Budget | Stop only at the runtime limit |
-| B: Rules | Budget plus repetition-based interruption |
-| C: Decision model | Budget plus model-confirmed repetition interruption |
+**Tasks.** Use the six [sandbox fixtures](experiments/README.md): recoverable/persistent service failure, consistent/conflicting requirements, and broken/already-correct code. The local service is inspectable and recovers by call count. Review valid blocker/clarification reports separately from executable success. This section supersedes the earlier stopping-policy pilot; [related work](RELATED_WORK.md) motivates the cost-control question.
 
-**Dataset.** Calibrate on six development tasks, then freeze settings and evaluate twelve held-out tasks from different families. Include ordinary coding, unproductive loops, legitimate retries, and slow successful operations. Three runs per condition give 108 runs for one judge model, or 72 for an A/B pilot. Additional judge models add 36 runs each.
+**Two stages.** Calibrate on separate development variants and freeze settings before evaluation. Run each condition on six configurations with three repetitions. Fix the base model, initial reasoning effort, image, prompt, permissions, and total budget; randomize condition order and reset the sandbox between runs.
 
-**Controls.** Keep the agent, prompts, permissions, and budgets fixed. Reset repository snapshots, use executable success checks, and randomize condition order. Two annotators label baseline segments and the earliest defensible intervention; report agreement and uncertain labels. The judge's predictions are not ground truth.
+| Stage | Hold fixed | Experimental conditions |
+| --- | --- | --- |
+| How to intervene | One trigger; no judge; identical setup before triggering | Continue unchanged; increase thinking; reduce/disable thinking; restart context at unchanged effort |
+| When to intervene | One action selected on development variants | No intervention; signal rules; identical signal rules plus Jev confirmation |
 
-| Metric | What it tests |
-| --- | --- |
-| Task success, false stops | Harm to productive work |
-| Tokens, time, tool calls | Savings including judge overhead |
-| Precision, recall, detection delay | Agreement with annotated segments |
-| Cancellation failures | Whether live interruptions take effect |
+Change reasoning effort only at a supported model-call boundary. Use an initial setting that permits both increases and decreases; call the low arm non-thinking only if genuinely supported. Context restart retains the task goal, code state, failed attempts, and next hypothesis. It does not reset the environment or grant a new budget. Freeze a shared intervention cap and cooldown; do not initially combine effort changes with restarts. Other base models and judges are follow-up comparisons, not a full factorial pilot.
 
-Use replay for detector analysis and fresh live runs for realized savings. Report per-task results and task-level bootstrap intervals; stochastic runs are imperfect counterfactuals. Optional ablations compare repetition thresholds, summary budgets, and judge models. Current limits are eight judge calls per run, spaced by four tool events; a separate token budget is future work.
+The planned decision tree below shows alternative experimental arms, not a learned action selector:
 
-**Exploratory target:** 20% fewer median tokens on unproductive runs, with at most a five-percentage-point drop in overall success. The small sample cannot establish statistical non-inferiority. No experiments have been run yet.
+```mermaid
+flowchart TD
+    E[Observe execution] --> W{Signal rule triggered?}
+    W -->|No or unavailable evidence| C[Continue unchanged]
+    W -->|Yes| G{Use optional Jev gate?}
+    G -->|Yes| J{Jev confirms intervention?}
+    J -->|No, unknown, or API failure| C
+    J -->|Yes| A{Assigned intervention arm}
+    G -->|No| A
+    A --> N[No intervention control]
+    A --> H[Increase thinking]
+    A --> L[Reduce or disable thinking]
+    A --> R[Restart context with retained summary]
+    N --> B[Continue within the same total budget]
+    H --> B
+    L --> B
+    R --> B
+    C --> B
+```
+
+**Signals and evidence.** Candidate rules use repeated unchanged outcomes, sustained generation-TPS decline relative to a prior measured window, or abrupt context growth. Freeze thresholds, windows, and persistence requirements on development variants. These are suspected-degradation signals: a large tool result or lower TPS alone does not establish failure. Measure generation time separately from tool waits; never infer context from cumulative input tokens. Current Codex telemetry lacks reliable TPS/context snapshots, so validate an instrumented source first or explicitly limit the pilot to repetition. Missing metrics and judge failures never constitute evidence to intervene. All judge conditions use the same bounded evidence and call limits; the proposed intervention judgment requires updating the current stop-only question.
+
+**Outcomes.** Report task success and total resource cost by family, including all attempts, judge calls, summaries, and restart overhead. Separately report wall time, tool calls, recovery rate after triggering, and cost to the next task-defined progress milestone. Judge scores and TPS recovery are not ground truth for task progress. Report harmful interventions and reviewed blocker outcomes alongside savings. Missing usage remains unknown; monetary savings require complete billing data. Every condition shares the same task-wide budget, including restarts. Use complete-run outcomes, not only successful runs or post-trigger costs.
+
+Replay can compare trigger decisions on fixed prefixes; it cannot establish outcomes after a different reasoning mode or context restart. Use fresh live trials for realized savings, report per-task counts and variation, and avoid broad claims from six fixtures. No live agent or authenticated judge experiments have been run.
 
 ## Deliverables and schedule
 
 | Stage | Deliverable |
 | --- | --- |
 | Weeks 1–2 | Tracer, SQLite records, rules, supervised interruption, tests |
-| Week 3 | Live API validation and development-set calibration |
-| Week 4 | Held-out experiments, ablations, failure analysis |
+| Week 3 | Telemetry and judge validation; effort/restart controls; development calibration |
+| Week 4 | Two-stage live comparisons, cost accounting, failure analysis |
 
-The prototype and cross-platform CI/release workflows are implemented. Live provider validation, evaluation tasks, and results remain outstanding. Main risks are false interruptions, hidden progress, and incomplete telemetry; conclusions will be limited to the evaluated tasks and harness.
+The prototype and cross-platform CI/release workflows are implemented. Six sandbox task fixtures are implemented. Metric triggers, reasoning-effort controls, context restarts, live provider validation, and experimental results remain outstanding. Observation-only defaults remain unchanged. Main risks are false interruptions, hidden progress, and incomplete telemetry; conclusions will be limited to the evaluated tasks and harness.
 
 ## Reference
 

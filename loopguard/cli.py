@@ -76,7 +76,7 @@ def run(args):
                 raise line
             event = None
             try:
-                event = normalize(json.loads(line))
+                event = normalize(json.loads(line), getattr(args, 'adapter', 'auto'))
                 trigger = detector.observe(event) if event else None
                 e = event or {}
                 tps = e['output_tokens']*1000/e['generation_ms'] if e.get('output_tokens') is not None and e.get('generation_ms') else None
@@ -137,6 +137,7 @@ def run(args):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--run', required=True)
+    p.add_argument('--adapter', choices=['auto', 'generic', 'codex'], default='auto')
     p.add_argument('--db', default='trace.sqlite')
     p.add_argument('--repeats', type=int, choices=range(2,17), default=3)
     p.add_argument('--request-stop', action='store_true')

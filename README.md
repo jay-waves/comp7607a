@@ -1,6 +1,8 @@
 # LoopGuard
 
-A local Python + SQLite monitor for recording agent execution and detecting repeated tool outcomes. It accepts Codex JSONL or generic events, emits decisions, and can stop a harness process it launches. No model, server, or credentials are needed for the demo.
+LoopGuard investigates when and how to intervene in stalled agent execution so that the remaining budget produces useful progress.
+
+The current prototype is a local Python + SQLite monitor for recording agent execution and detecting repeated tool outcomes. It accepts Codex JSONL or generic events, emits decisions, and can stop a harness process it launches. No model, server, or credentials are needed for the demo.
 
 ## Quick start
 
@@ -52,7 +54,7 @@ uv build
 
 CI tests Linux, macOS, and Windows. A `v*` tag publishes a universal Python wheel, source archive, standalone `loopguard-presentation.html`, and checksums. Python 3.11+ is required.
 
-See the [proposal and experiment plan](PROPOSAL.md). Codex stream reference: [official non-interactive mode documentation](https://learn.chatgpt.com/docs/non-interactive-mode).
+See the [proposal and experiment plan](PROPOSAL.md) and [related work and comparison design](RELATED_WORK.md). Codex stream reference: [official non-interactive mode documentation](https://learn.chatgpt.com/docs/non-interactive-mode).
 
 ## Typed Decision API
 
@@ -91,3 +93,41 @@ Candidate extension environments are DeepSeek Harness, Grok Build, and Cursor Ag
 The presentation uses Pele to render Mermaid architecture, decision-flow, evidence-pipeline, sequence, and evaluation diagrams with the same Georgia and Paul Tol Muted styling. These diagrams describe implemented monitoring semantics or explicitly planned evaluation.
 
 For offline distribution, `npm run build:single --prefix presentation` produces `presentation/dist-single/index.html` with scripts and styles inlined.
+
+## Experiment plan
+
+Compare **when to intervene** and **how to intervene** in two stages, under the same total task budget:
+
+| Stage | Hold fixed | Compare |
+| --- | --- | --- |
+| How | Base model, initial reasoning effort, trigger | Continue unchanged; increase thinking; reduce/disable thinking; restart context |
+| When | Intervention selected on development tasks | No intervention; signal rules; the same rules plus optional Jev confirmation |
+
+Candidate signals are repeated unchanged outcomes, sustained generation-TPS decline, and abrupt context growth. These indicate suspected degradation, not proven failure. Missing metrics remain unknown; current Codex events do not provide reliable generation TPS or context snapshots. Thinking controls must be supported by the model interface, not simulated with tags.
+
+A context restart retains the goal, code state, failure summary, and next hypothesis while keeping reasoning effort unchanged. All attempts and judge calls share one budget. Measure task success and total cost, plus recovery after intervention; false interventions are a quality diagnostic. See the [protocol and decision tree](PROPOSAL.md#experiments).
+
+**Planned capabilities:** metric-based triggers, reasoning-effort changes, and context restarts. The current implementation observes, warns, or stops an owned process, optionally after judge confirmation. No live agent results are claimed.
+
+## Small sandbox pilot
+
+[Sandbox instructions and task definitions](experiments/README.md) provide six
+paired fixtures: recoverable/persistent service failure, consistent/conflicting
+requirements, and a broken/already-complete function. Build the lightweight image:
+
+```bash
+docker build -t loopguard-sandbox:v1 -f experiments/Dockerfile experiments
+docker run --rm -it --network none --cpus 1 --memory 512m --pids-limit 128 -e TASK=retry-control loopguard-sandbox:v1
+```
+
+Every new container starts clean. The image includes Python, uv, bash, git, curl,
+ripgrep, jq, patch, procps, findutils, and less; model clients are not installed.
+Fixtures are implemented, not experimental results. Contradictory requirements
+need human review; the local mock service is inspectable and call-count driven.
+
+`--adapter auto|generic|codex` selects event decoding; auto preserves the previous
+mixed-input behavior. Adapter evidence capabilities live in `loopguard/core.py`:
+Codex usage is available at turn completion, explicit progress is unknown;
+generic events may supply interval usage and explicit progress. Process control
+remains in the CLI, independent of decoding and detection. Cursor and DeepSeek
+are future adapters, not supported clients. Missing evidence remains unknown.
