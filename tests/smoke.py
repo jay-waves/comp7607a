@@ -10,14 +10,14 @@ import sys
 import tempfile
 import unittest
 
-BIN = str(Path('target/debug/loopguard.exe' if os.name == 'nt' else 'target/debug/loopguard').resolve())
+BIN = [sys.executable, '-m', 'loopguard']
 
 class Smoke(unittest.TestCase):
     def run_trace(self, *args, data=None):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         db = str(Path(temp.name) / 'trace.sqlite')
-        p = subprocess.run([BIN, '--db', db, '--run', 'test', *args],
+        p = subprocess.run([*BIN, '--db', db, '--run', 'test', *args],
                            input=data, text=True, capture_output=True, timeout=10)
         conn = sqlite3.connect(db)
         self.addCleanup(conn.close)

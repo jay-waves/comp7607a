@@ -5,63 +5,19 @@ on:
 permissions:
   contents: read
 jobs:
-  build:
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-          - os: macos-14
-            target: aarch64-apple-darwin
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-      - run: cargo test --locked
-      - run: cargo build --locked
-      - run: python tests/smoke.py
-      - run: cargo build --release --locked --target ${{ matrix.target }}
-      - name: Package Unix binary and checksum
-        if: runner.os != 'Windows'
-        env:
-          TARGET: ${{ matrix.target }}
-        run: |
-          mkdir dist
-          tar -czf "dist/loopguard-$TARGET.tar.gz" -C "target/$TARGET/release" loopguard
-          cd dist
-          shasum -a 256 "loopguard-$TARGET.tar.gz" > "loopguard-$TARGET.tar.gz.sha256"
-      - name: Package Windows binary and checksum
-        if: runner.os == 'Windows'
-        shell: pwsh
-        env:
-          TARGET: ${{ matrix.target }}
-        run: |
-          New-Item -ItemType Directory -Path dist | Out-Null
-          $archive = "loopguard-$env:TARGET.zip"
-          Compress-Archive -Path "target/$env:TARGET/release/loopguard.exe" -DestinationPath "dist/$archive"
-          $hash = (Get-FileHash "dist/$archive" -Algorithm SHA256).Hash.ToLowerInvariant()
-          [System.IO.File]::WriteAllText("$PWD/dist/$archive.sha256", "$hash  $archive`n")
-      - uses: actions/upload-artifact@v4
-        with:
-          name: loopguard-${{ matrix.target }}
-          path: dist/*
-  publish:
-    needs: build
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: loopguard-*
-          merge-multiple: true
-          path: dist
-      - name: Publish release
-        env:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked --python 3.11
+      - run: uv run --locked python -m unittest discover -s tests
+      - run: uv run --locked python tests/smoke.py
+      - run: uv build
+      - run: cd dist && sha256sum * > SHA256SUMS
+      - env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           TAG: ${{ github.ref_name }}

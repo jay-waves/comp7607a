@@ -1,0 +1,13 @@
+[project]
+name = "loopguard"
+version = "0.2.0"
+description = "Local agent tracing and wasted-effort detection"
+requires-python = ">=3.11"
+dependencies = ["httpx>=0.28,<1"]
+
+[project.scripts]
+loopguard = "loopguard.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
