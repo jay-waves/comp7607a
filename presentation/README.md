@@ -1,30 +1,33 @@
 # LoopGuard presentation
 
-Independent Markdown/Slidev deck with React + TypeScript widgets and global Paul Tol Muted CSS tokens. “typstscript” is interpreted as TypeScript. Slidev retains its Vue host; React mounts through `components/ReactDemo.vue`.
+Independent reveal.js + React + TypeScript deck, built with Vite. Markdown supplies prose; visx supplies React SVG charts. Global CSS uses Paul Tol Muted palette tokens. No Vue or Slidev is required.
 
-Requires Node.js 22+. Frontend commands use npm in this directory; Python continues to use uv at repository root.
+Requires Node.js 22.12+ (or a newer supported Node release). Use npm here; Python tooling at the repository root continues to use uv.
 
 ```sh
 npm ci
 npm run dev
 npm run typecheck
 npm run build
+npm run preview
 ```
 
-Serve `dist/` over HTTP for the HTML presentation. Build uses relative asset paths. Edit `slides.md`, `react/`, and `styles/index.css`; Slidev automatically loads the global stylesheet. No external fonts or APIs are required by this template. The React counter is synthetic and does not implement LoopGuard detection.
+Serve dist/ over HTTP. Relative asset paths and reveal.js hash navigation support GitHub Pages repository hosting. No external fonts or runtime APIs are required. For PDF, use reveal.js print mode (?print-pdf) and browser Print to PDF.
 
-Optional PDF: install `playwright-chromium` as a dev dependency and run `npm run export`. HTML is the acceptance target.
+## Authoring
 
-Palette reference: https://sronpersonalpages.nl/~pault/ . See AGENTS.md for aliases and authoring constraints.
+Edit slides.md for prose and --- page separators. Notes: starts speaker notes. Widget markers select React slides: <!-- widget: observation -->, <!-- widget: tokens -->, <!-- widget: quality -->, <!-- widget: timeline -->. Their heading and notes come from the same Markdown page. react/main.tsx assembles the deck through the official @revealjs/react components; it does not mount React through HTML injection.
+
+Edit react/ExperimentCharts.tsx for chart fixtures and styles/index.css for global rules and color aliases. The counter and all three charts are synthetic demonstrations, not measured results or forecasts. Source tables derive from the same chart data.
 
 ## GitHub Pages
 
-The demo follows PROPOSAL.md: research question, scope/design, experiments, deliverables/schedule, and references. All experimental targets are labeled as planned, not measured.
+.github/workflows/presentation.yml installs locked dependencies, typechecks and builds PRs. On main it publishes only presentation/dist through the Pages artifact/OIDC deployment flow. Manual dispatch is supported on main.
 
-`.github/workflows/presentation.yml` checks pull requests and builds/deploys changes on `main`; it also supports manual dispatch on `main`. Only `presentation/dist` is published. Hash routing and relative assets support the repository subpath without server rewrite rules.
+One-time setup: repository Settings → Pages → Build and deployment → Source → GitHub Actions. The github-pages environment must allow main. No custom secret is needed. Expected default URL: https://jay-waves.github.io/comp7607a/ . Actual deployment status and URL are reported by Actions.
 
-One-time repository setup: Settings → Pages → Build and deployment → Source → **GitHub Actions**. The workflow needs Pages enabled and the `github-pages` environment must allow `main`. No custom secret is required. After pushing, the deployment job exposes the actual URL; the expected default URL is https://jay-waves.github.io/comp7607a/ .
+## References
 
-The workflow uses GitHub's Pages artifact/OIDC deployment flow: https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages . It does not commit generated files or publish trace databases.
-
-The presentation includes three visx charts (policy token use, success/false-stop rates, and cumulative tool calls) with explicitly fabricated data for layout demonstration. They are not experimental results, predictions, or evidence for the exploratory target.
+- React bindings: https://revealjs.com/react/
+- Palette: https://sronpersonalpages.nl/~pault/
+- Pages: https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages

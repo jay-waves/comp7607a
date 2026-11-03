@@ -1,15 +1,3 @@
----
-theme: default
-title: LoopGuard — Detecting Unproductive Agent Execution
-info: Course project proposal demo; experiments have not been run.
-aspectRatio: 16/9
-colorSchema: light
-routerMode: hash
-transition: none
-fonts:
-  provider: none
----
-
 <p class="eyebrow">COURSE PROJECT · PROPOSAL DEMO</p>
 
 # LoopGuard
@@ -18,7 +6,8 @@ fonts:
 
 Local-first monitoring · selective intervention · measurable tradeoffs
 
-<!-- Proposal demonstration. No authenticated model evaluation or held-out experiments have been run. -->
+Notes:
+Proposal demonstration. No authenticated model evaluation or held-out experiments have been run.
 
 ---
 
@@ -30,7 +19,8 @@ Can a lightweight monitor reduce wasted agent execution **without harming task s
 - Fixed budgets limit cost, but cannot distinguish useful retries from waste.
 - Selective interruption may save work and may also stop productive attempts.
 
-<!-- Evaluate the tradeoff rather than assuming every repetition is a loop. -->
+Notes:
+Evaluate the tradeoff rather than assuming every repetition is a loop.
 
 ---
 
@@ -53,7 +43,8 @@ Can a lightweight monitor reduce wasted agent execution **without harming task s
 
 Stored events and decisions support replay and evaluation.
 
-<!-- Flow follows the architecture in PROPOSAL.md. The presentation is a static frontend, not a monitoring dashboard. -->
+Notes:
+Flow follows the architecture in PROPOSAL.md. The presentation is a static frontend, not a monitoring dashboard.
 
 ---
 
@@ -68,9 +59,10 @@ Stored events and decisions support replay and evaluation.
 
 # Synthetic interaction demo
 
-<ReactDemo />
+<!-- widget: observation -->
 
-<!-- Click three times to illustrate a warning. This counter does not implement the detector's tuple matching or window semantics. Reset restores the initial state. -->
+Notes:
+Click three times to illustrate a warning. This counter does not implement the detector's tuple matching or window semantics. Reset restores the initial state.
 
 ---
 
@@ -95,7 +87,8 @@ Same question and trace window across models.
 - Review trace contents before sharing; source code and secrets may be present.
 - Up to eight judge calls per run, spaced by four tool events.
 
-<!-- A separate judge token budget is future work. This public demo contains synthetic content only. -->
+Notes:
+A separate judge token budget is future work. This public demo contains synthetic content only.
 
 ---
 
@@ -118,7 +111,8 @@ Replay evaluates detection. Fresh live runs measure realized savings.
 - A/B pilot: 72 runs. Each additional judge model: 36 runs.
 - Include coding, loops, legitimate retries and slow successful operations.
 
-<!-- Fix agent, prompts, permissions and budgets; reset repository snapshots, use executable success checks and randomize condition order. -->
+Notes:
+Fix agent, prompts, permissions and budgets; reset repository snapshots, use executable success checks and randomize condition order.
 
 ---
 
@@ -133,7 +127,8 @@ Replay evaluates detection. Fresh live runs measure realized savings.
 
 Two annotators label baseline segments and earliest defensible intervention.
 
-<!-- Report agreement and uncertain labels. Judge predictions are not ground truth. Report per-task results and task-level bootstrap intervals; runs are imperfect counterfactuals. -->
+Notes:
+Report agreement and uncertain labels. Judge predictions are not ground truth. Report per-task results and task-level bootstrap intervals; runs are imperfect counterfactuals.
 
 ---
 
@@ -151,25 +146,28 @@ With at most a **5 percentage point** drop in overall success.
 
 # Token use across policies
 
-<ExperimentChart kind="tokens" />
+<!-- widget: tokens -->
 
-<!-- Fabricated values: A 40k, B 26k, C 31k. These are layout fixtures, not findings or a forecast. -->
+Notes:
+Fabricated values: A 40k, B 26k, C 31k. These are layout fixtures, not findings or a forecast.
 
 ---
 
 # Success and interruption tradeoffs
 
-<ExperimentChart kind="quality" />
+<!-- widget: quality -->
 
-<!-- Fabricated percentages; no sample size or confidence interval is claimed. Success and false-stop rates are separate illustrative metrics. -->
+Notes:
+Fabricated percentages; no sample size or confidence interval is claimed. Success and false-stop rates are separate illustrative metrics.
 
 ---
 
 # When repeated effort ends
 
-<ExperimentChart kind="timeline" />
+<!-- widget: timeline -->
 
-<!-- Synthetic trajectories flatten when the illustrative policy stops tool execution. They are not replay traces. -->
+Notes:
+Synthetic trajectories flatten when the illustrative policy stops tool execution. They are not replay traces.
 
 ---
 
@@ -194,7 +192,8 @@ Outstanding: live provider validation, evaluation tasks and results.
 - Evidence summaries may omit important details.
 - Conclusions apply only to the evaluated tasks and harness.
 
-<!-- The contribution is an empirical comparison under partial observability, not a universal guarantee of safe stopping. -->
+Notes:
+The contribution is an empirical comparison under partial observability, not a universal guarantee of safe stopping.
 
 ---
 

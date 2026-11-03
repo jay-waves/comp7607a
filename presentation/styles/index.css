@@ -21,19 +21,18 @@
   --color-border: var(--tol-grey);
   --color-surface: var(--color-background);
   --color-on-primary: var(--color-background);
-  --slidev-theme-primary: var(--color-primary);
 }
-.slidev-layout {
+.reveal {
   background: var(--color-background);
   color: var(--color-text);
   font-family: system-ui, sans-serif;
   font-size: 24px;
   line-height: 1.5;
-  padding: 48px 56px;
+  text-align: left;
 }
-.slidev-layout h1 { color: var(--color-primary); font-size: 44px; font-weight: 700; }
-.slidev-layout h2 { font-size: 30px; }
-.slidev-layout a { color: var(--color-primary); text-decoration: underline; }
+.reveal h1 { color: var(--color-primary); font-size: 44px; font-weight: 700; }
+.reveal h2 { font-size: 30px; }
+.reveal a { color: var(--color-primary); text-decoration: underline; }
 .panel { border: 2px solid var(--color-border); border-top: 6px solid var(--color-accent); border-radius: 12px; padding: 24px; background: var(--color-surface); }
 .eyebrow { color: var(--color-primary); font-size: 16px; letter-spacing: .08em; }
 .actions { display: flex; gap: 16px; margin-top: 16px; }
@@ -43,9 +42,9 @@ button:focus-visible { outline: 3px solid var(--color-text); outline-offset: 4px
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 .pipeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 28px 0; }
 .pipeline .panel { padding: 16px; font-size: 20px; }
-.slidev-layout table { width: 100%; font-size: 21px; }
-.slidev-layout th { color: var(--color-primary); }
-.slidev-layout th, .slidev-layout td { border-bottom: 1px solid var(--color-border); padding: 10px 12px; }
+.reveal table { width: 100%; font-size: 21px; }
+.reveal th { color: var(--color-primary); }
+.reveal th, .reveal td { border-bottom: 1px solid var(--color-border); padding: 10px 12px; }
 :root {
   --color-series-budget: var(--tol-indigo);
   --color-series-rules: var(--tol-teal);
@@ -65,3 +64,13 @@ button:focus-visible { outline: 3px solid var(--color-text); outline-offset: 4px
 .experiment-chart summary { cursor: pointer; color: var(--color-primary); }
 .experiment-chart details[open] { max-height: 110px; overflow: auto; }
 .experiment-chart details table { font-size: 14px; }
+
+html, body, #root { height: 100%; margin: 0; background: var(--color-background); }
+.reveal .slides > section { box-sizing: border-box; padding: 24px 32px; }
+.reveal p, .reveal ul, .reveal table { margin: 18px 0; }
+.reveal ul { padding-left: 28px; }
+.reveal li { margin: 12px 0; }
+.reveal h1, .reveal h2 { margin: 0 0 20px; line-height: 1.2; }
+.reveal .controls { color: var(--color-primary); }
+.reveal .progress { color: var(--color-accent); }
+.reveal .slide-number { color: var(--color-text); background: var(--color-background); }

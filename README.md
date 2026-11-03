@@ -82,7 +82,7 @@ All providers have mock coverage only. Live inference and Qwen's assumed `answer
 
 ## Presentation template
 
-`presentation/` is an independent HTML-first Slidev/Markdown subproject with React + TypeScript widgets and global Paul Tol Muted CSS tokens. It uses npm for frontend dependencies; Python remains managed by uv. Its synthetic examples do not add experiments or measured results. See [presentation instructions](presentation/README.md).
+`presentation/` is an independent HTML-first reveal.js + React/Markdown subproject with React + TypeScript widgets and global Paul Tol Muted CSS tokens. It uses npm for frontend dependencies; Python remains managed by uv. Its synthetic examples do not add experiments or measured results. See [presentation instructions](presentation/README.md).
 
 The proposal demo deck follows the research question, design, experiments, schedule and references above. `.github/workflows/presentation.yml` validates pull requests and deploys the HTML build to GitHub Pages on `main` after Pages is configured to use GitHub Actions. No measured experiment results are included.
 
