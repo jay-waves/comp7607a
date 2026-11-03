@@ -31,4 +31,8 @@
 - Review rendered slides after layout or chart changes: overflow, text size, labels, palette aliases, keyboard interaction, and visible simulated-data labels. State explicitly if browser inspection was unavailable.
 - Keep proposal content and measured results distinct. Replacing fixtures with real data requires documented provenance, units, sample size, configuration, and corresponding README/proposal updates.
 
-- slides.md uses --- separators, Notes: speaker notes, and explicit <!-- widget: observation|tokens|quality|timeline --> markers for React slides. Keep prose in Markdown and marker handling in react/main.tsx. Do not use Vue component tags.
+- slides.md uses --- separators, Notes: speaker notes, and explicit <!-- widget: observation|decision|tokens|quality|timeline --> markers for React slides. Keep prose in Markdown and marker handling in react/main.tsx. Do not use Vue component tags.
+
+- Use --font-presentation (Georgia with serif fallbacks) throughout, including SVG labels. Keep dated provider specifications with source links separate from synthetic experimental values.
+
+- Render Mermaid through Pele in React, with diagram sources in slides.md. Register only needed diagram types, preserve mount cleanup, and map --pele-* variables to global palette/font aliases. Do not add Mermaid.js or a second diagram renderer. Keep every diagram legible within the slide and provide source disclosure.

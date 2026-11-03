@@ -8,7 +8,7 @@ Can a lightweight monitor reduce wasted agent execution without harming task suc
 
 ## Scope and design
 
-Build a Python CLI managed with uv with SQLite storage, targeting single-agent Codex tasks. A common JSONL schema allows future harness adapters. The contribution is a comparison of interruption policies under partial observability. Dashboards, fine-tuning, multi-agent coordination, and a second full harness integration are outside the core scope.
+Build a Python CLI managed with uv with SQLite storage, targeting single-agent Codex tasks. A common JSONL schema allows future harness adapters. The intended empirical contribution is a comparison of interruption policies under partial observability. Dashboards, fine-tuning, multi-agent coordination, and a second full harness integration are outside the core scope.
 
 ```mermaid
 flowchart LR
@@ -26,7 +26,7 @@ flowchart LR
 
 The tracer records tool calls, outcomes, reported token usage, and decisions. Rules flag repeated unchanged outcomes; an optional typed model evaluates a bounded, deterministic evidence summary and returns a stop probability. Observation is the default; enforcement requires explicit configuration. API failures continue observation, while the runtime limit remains active.
 
-Context length and generation TPS are recorded only when supported by source measurements. Silence alone is not evidence of wasted effort. External calls send grouped counts, evidence IDs, and short unredacted excerpts within a 6 KB budget. Raw traces remain local; summaries can omit relevant details and do not infer progress from silence. A skill or MCP interface may later expose summaries, but cannot be assumed to control the host.
+Context length and generation TPS are recorded only when supported by source measurements. Silence alone is not evidence of wasted effort. External calls send grouped counts, evidence IDs, and short unredacted excerpts within a 6 KB budget. Raw traces remain local; summaries can omit relevant details and do not infer progress from silence.
 
 | Decision model | Role | Verification |
 | --- | --- | --- |
@@ -73,10 +73,10 @@ The prototype and cross-platform CI/release workflows are implemented. Live prov
 
 [Codex non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) documents the primary JSONL interface. Provider references and commands are in the [README](README.md#typed-decision-api).
 
-## Presentation template
+## Presentation
 
-`presentation/` is an independent HTML-first reveal.js + React/Markdown subproject with React + TypeScript widgets and global Paul Tol Muted CSS tokens. It uses npm for frontend dependencies; Python remains managed by uv. Its synthetic examples do not add experiments or measured results. See [presentation instructions](presentation/README.md).
+The [presentation](presentation/README.md) communicates the method and evaluation framework independently of this proposal's schedule. Its synthetic charts illustrate the intended analyses and provide no empirical evidence.
 
-The proposal demo deck follows the research question, design, experiments, schedule and references above. `.github/workflows/presentation.yml` validates pull requests and deploys the HTML build to GitHub Pages on `main` after Pages is configured to use GitHub Actions. No measured experiment results are included.
+Candidate extension environments are DeepSeek Harness, Grok Build, and Cursor Agent CLI. Codex remains the implemented adapter and primary evaluation scope; candidate integrations and cross-harness experiments are not yet implemented.
 
-The presentation includes three visx charts (policy token use, success/false-stop rates, and cumulative tool calls) with explicitly fabricated data for layout demonstration. They are not experimental results, predictions, or evidence for the exploratory target.
+The presentation uses Pele to render Mermaid architecture, decision-flow, evidence-pipeline, sequence, and evaluation diagrams with the same Georgia and Paul Tol Muted styling. These diagrams describe implemented monitoring semantics or explicitly planned evaluation.

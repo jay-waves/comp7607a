@@ -1,6 +1,6 @@
 # LoopGuard
 
-A small Python + SQLite prototype for recording agent execution and detecting repeated effort. It accepts Codex JSONL or generic events, emits decisions, and can stop a harness process it launches. No model, server, or credentials are needed for the demo.
+A local Python + SQLite monitor for recording agent execution and detecting repeated tool outcomes. It accepts Codex JSONL or generic events, emits decisions, and can stop a harness process it launches. No model, server, or credentials are needed for the demo.
 
 ## Quick start
 
@@ -50,7 +50,7 @@ uv run python tests/smoke.py
 uv build
 ```
 
-CI tests Linux, macOS, and Windows. A `v*` tag publishes a universal Python wheel, source archive, and checksums. Python 3.11+ is required.
+CI tests Linux, macOS, and Windows. A `v*` tag publishes a universal Python wheel, source archive, standalone `loopguard-presentation.html`, and checksums. Python 3.11+ is required.
 
 See the [proposal and experiment plan](PROPOSAL.md). Codex stream reference: [official non-interactive mode documentation](https://learn.chatgpt.com/docs/non-interactive-mode).
 
@@ -80,10 +80,14 @@ Calls are limited to eight per run, spaced by four tool events, with a three-sec
 
 All providers have mock coverage only. Live inference and Qwen's assumed `answers.stop.noul` response remain unverified.
 
-## Presentation template
+## Presentation
 
-`presentation/` is an independent HTML-first reveal.js + React/Markdown subproject with React + TypeScript widgets and global Paul Tol Muted CSS tokens. It uses npm for frontend dependencies; Python remains managed by uv. Its synthetic examples do not add experiments or measured results. See [presentation instructions](presentation/README.md).
+The [presentation](presentation/README.md) presents the research problem, monitoring method, evaluation protocol, illustrative comparisons, and limitations. It uses reveal.js, React, TypeScript, Markdown, visx, and Paul Tol Muted CSS tokens. All plotted values are synthetic; no experimental findings are claimed.
 
-The proposal demo deck follows the research question, design, experiments, schedule and references above. `.github/workflows/presentation.yml` validates pull requests and deploys the HTML build to GitHub Pages on `main` after Pages is configured to use GitHub Actions. No measured experiment results are included.
+The Pages workflow validates pull requests and deploys `presentation/dist` from `main`. Configure the repository's Pages source as GitHub Actions. Python uses uv; frontend tooling remains isolated in `presentation/`.
 
-The presentation includes three visx charts (policy token use, success/false-stop rates, and cumulative tool calls) with explicitly fabricated data for layout demonstration. They are not experimental results, predictions, or evidence for the exploratory target.
+Candidate extension environments are DeepSeek Harness, Grok Build, and Cursor Agent CLI. Codex remains the implemented adapter and primary evaluation scope; candidate integrations and cross-harness experiments are not yet implemented.
+
+The presentation uses Pele to render Mermaid architecture, decision-flow, evidence-pipeline, sequence, and evaluation diagrams with the same Georgia and Paul Tol Muted styling. These diagrams describe implemented monitoring semantics or explicitly planned evaluation.
+
+For offline distribution, `npm run build:single --prefix presentation` produces `presentation/dist-single/index.html` with scripts and styles inlined.

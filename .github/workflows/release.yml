@@ -4,6 +4,9 @@ on:
     tags: ['v*']
 permissions:
   contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -16,7 +19,20 @@ jobs:
       - run: uv run --locked python -m unittest discover -s tests
       - run: uv run --locked python tests/smoke.py
       - run: uv build
-      - run: cd dist && sha256sum * > SHA256SUMS
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: presentation/package-lock.json
+      - run: npm ci --prefix presentation
+      - run: npm run typecheck --prefix presentation
+      - run: npm run build --prefix presentation
+      - run: npm run build:single --prefix presentation
+      - name: Stage standalone presentation
+        run: cp presentation/dist-single/index.html dist/loopguard-presentation.html
+      - name: Generate release checksums
+        working-directory: dist
+        run: sha256sum *.whl *.tar.gz loopguard-presentation.html > SHA256SUMS
       - env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}

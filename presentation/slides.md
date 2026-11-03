@@ -1,4 +1,4 @@
-<p class="eyebrow">COURSE PROJECT · PROPOSAL DEMO</p>
+<p class="eyebrow">COURSE PRESENTATION</p>
 
 # LoopGuard
 
@@ -7,11 +7,11 @@
 Local-first monitoring · selective intervention · measurable tradeoffs
 
 Notes:
-Proposal demonstration. No authenticated model evaluation or held-out experiments have been run.
+This presentation describes an implemented monitoring method and a planned evaluation. Charts contain synthetic data; empirical effectiveness has not been established.
 
 ---
 
-# Research question
+# Selective interruption under uncertainty
 
 Can a lightweight monitor reduce wasted agent execution **without harming task success**?
 
@@ -24,7 +24,7 @@ Evaluate the tradeoff rather than assuming every repetition is a loop.
 
 ---
 
-# Scope and design
+# System scope
 
 - Python CLI + SQLite; dependencies and execution managed with uv.
 - Single-agent Codex tasks; Codex JSONL and a generic event schema.
@@ -33,18 +33,58 @@ Evaluate the tradeoff rather than assuming every repetition is a loop.
 
 ---
 
-# From events to intervention
+# Research objectives
 
-<div class="pipeline" aria-label="LoopGuard architecture">
-  <div class="panel"><h2>Record</h2><p>Codex / generic JSONL</p><p>Python tracer → SQLite</p></div>
-  <div class="panel"><h2>Assess</h2><p>Repetition rules</p><p>Optional decision API</p></div>
-  <div class="panel"><h2>Act</h2><p>Policy + runtime limit</p><p>Warn or stop owned process</p></div>
-</div>
+1. Detect repeated tool outcomes under incomplete telemetry.
+2. Quantify the resource–success tradeoff of selective interruption.
+3. Assess transfer across agent environments with explicit adapter validation.
 
-Stored events and decisions support replay and evaluation.
+---
+
+# Candidate agent environments
+
+| Environment | Research role | LoopGuard status |
+| --- | --- | --- |
+| Codex | Primary evaluation harness | JSONL adapter implemented |
+| DeepSeek Harness | Extensible runtime comparison | Candidate; adapter pending |
+| Grok Build | Coding-agent comparison | Candidate; adapter pending |
+| Cursor Agent CLI | Headless workflow comparison | Candidate; adapter pending |
 
 Notes:
-Flow follows the architecture in PROPOSAL.md. The presentation is a static frontend, not a monitoring dashboard.
+Core evaluation remains single-agent Codex. Candidates are an extension agenda, not implemented integrations or an expansion of the 108-run protocol. Official descriptions: https://www.deepseek.com/harness/en/ ; https://x.ai/build ; https://cursor.com/docs/cli/overview . Telemetry, permissions and cancellation semantics require validation before comparison.
+
+---
+
+# System architecture
+
+```mermaid
+flowchart LR
+  A[Codex / generic JSONL] --> B[Event adapter]
+  B --> C[(Local SQLite)]
+  B --> D[Repetition detector]
+  D --> E[Intervention policy]
+  D --> F[Optional decision API]
+  F --> E
+  G[Runtime limit] --> E
+  E --> H[Warn / stop owned process]
+  E --> C
+```
+
+Notes:
+The tracer stores events and decisions locally. External inference is opt-in; only an explicitly launched child can be stopped. Unsupported metrics remain unknown.
+
+---
+
+# Operational definition of repetition
+
+An identical **(tool, arguments, result, failed)** tuple occurs at least three times within the last sixteen completed tool events.
+
+- Explicit progress clears the detection window.
+- Matching uses normalized outcomes, not shortened display excerpts.
+- Repetition is an observable proxy; it does not establish absence of progress.
+
+Notes:
+Legitimate polling and productive retries can satisfy the rule. The default threshold is configurable from 2 to 16.
 
 ---
 
@@ -57,6 +97,46 @@ Flow follows the architecture in PROPOSAL.md. The presentation is a static front
 
 ---
 
+# Decision and fallback paths
+
+```mermaid
+flowchart LR
+  A[Completed tool event] --> B{Repeated outcome?}
+  B -->|No| O[Continue observation]
+  B -->|Yes| C{Judge enabled?}
+  C -->|No| P[Configured policy]
+  C -->|Yes| J{Judge response}
+  J -->|Failure / unknown| O
+  J -->|Below threshold| O
+  J -->|Stop probability ≥ 0.9| P
+  P --> W[Default: warn]
+  P --> R[Explicit: request stop]
+  P --> S[Explicit: enforce on child]
+```
+
+Notes:
+This diagram describes repetition-triggered intervention. The independent runtime limit is separate and remains active on judge failures. Missing metrics and silence never justify stopping.
+
+---
+
+# Evidence preparation pipeline
+
+```mermaid
+flowchart LR
+  A[Latest 16 tool events] --> B[Normalize outcomes]
+  B --> C[Group identical patterns]
+  C --> D[Counts + evidence IDs]
+  D --> E[Short excerpts]
+  E --> F[Summary ≤ 6 KB]
+  F --> G[Typed stop question]
+  G --> H[Decision log]
+```
+
+Notes:
+The window begins after explicit progress. Full normalized outcomes determine identity; excerpts do not. External excerpts are unredacted. The byte budget is not a token count. Up to eight calls per run are spaced by four tool events.
+
+---
+
 # Synthetic interaction demo
 
 <!-- widget: observation -->
@@ -66,10 +146,14 @@ Click three times to illustrate a warning. This counter does not implement the d
 
 ---
 
-# Optional decision models
+# Decision APIs: cost and context
 
-| Model | Current verification |
-| --- | --- |
+<!-- widget: decision -->
+
+Notes:
+Specifications checked 2026-11-03 against provider sources linked on the slide. Cloudflare's official blog reports $0.038/M and 24k hosted context; its model-reference page could not be retrieved. Jev has distinct request/question limits; opt-in long context is not enabled by LoopGuard. Qwen is free during preview. These are published specifications, not live integration results. All adapters still require live validation.
+
+--- | --- |
 | TypeSafe Jev | Mock-tested adapter |
 | Cloudflare Clef-Flash | Mock-tested adapter |
 | Qwen decision-model-preview | Request adapted; live response validation pending |
@@ -92,7 +176,29 @@ A separate judge token budget is future work. This public demo contains syntheti
 
 ---
 
-# Experiments: three conditions
+# Live monitoring sequence
+
+```mermaid
+sequenceDiagram
+  participant A as Owned agent
+  participant T as Tracer
+  participant J as Optional judge
+  participant P as Policy
+  A->>T: Completed tool outcome
+  T->>T: Record and detect repetition
+  T->>J: Bounded evidence, if enabled
+  Note over A: Child continues during judge call
+  J-->>T: Stop probability or failure
+  T->>P: Evidence and known decision
+  P-->>A: Stop only with explicit enforcement
+```
+
+Notes:
+The collector awaits the judge response while the child continues running. A response failure preserves observation. A timeout remains independent of the repetition policy.
+
+---
+
+# Evaluation protocol
 
 | Condition | Intervention policy |
 | --- | --- |
@@ -104,7 +210,30 @@ Replay evaluates detection. Fresh live runs measure realized savings.
 
 ---
 
-# Dataset and controls
+# Evaluation pipeline
+
+```mermaid
+flowchart LR
+  D[6 development tasks] --> F[Freeze settings]
+  F --> T[12 held-out tasks]
+  T --> A[A: budget]
+  T --> B[B: rules]
+  T --> C[C: model-confirmed]
+  A --> R[3 runs / condition]
+  B --> R
+  C --> R
+  R --> S[Success + resource use]
+  R --> N[Annotated detection metrics]
+  S --> U[Task-level analysis]
+  N --> U
+```
+
+Notes:
+Planned protocol, not completed experiments. Fix agent, prompts, permissions and budgets; reset repository snapshots and randomize condition order. Replay supports detector analysis, whereas fresh live runs measure realized savings.
+
+---
+
+# Sampling and experimental control
 
 - Calibrate on **6 development tasks**, then freeze settings.
 - Evaluate **12 held-out tasks × 3 runs × 3 conditions = 108 runs** for one judge model.
@@ -116,7 +245,7 @@ Fix agent, prompts, permissions and budgets; reset repository snapshots, use exe
 
 ---
 
-# Measurements and ground truth
+# Outcomes and annotation
 
 | Measure | Purpose |
 | --- | --- |
@@ -132,15 +261,15 @@ Report agreement and uncertain labels. Judge predictions are not ground truth. R
 
 ---
 
-# Exploratory target, not a result
+# Analysis framework
 
-## 20% fewer median tokens on unproductive runs
+- Measure resource use jointly with task success and false interruptions.
+- Report per-task estimates and task-level bootstrap intervals.
+- Separate replay detection accuracy from savings in fresh live runs.
+- Treat the following charts as **synthetic illustrations**, not findings.
 
-With at most a **5 percentage point** drop in overall success.
-
-- Small samples cannot establish statistical non-inferiority.
-- Ablations may vary repetition thresholds, summary budgets and judge models.
-- **Experiments have not been run; savings and success effects are unknown.**
+Notes:
+The protocol is planned. The small sample cannot establish statistical non-inferiority. Judge predictions are not ground truth.
 
 ---
 
@@ -171,21 +300,16 @@ Synthetic trajectories flatten when the illustrative policy stops tool execution
 
 ---
 
-# Deliverables and schedule
+# Implementation and empirical status
 
-| Stage | Deliverable |
-| --- | --- |
-| Weeks 1–2 | Tracer, SQLite, rules, interruption, tests |
-| Week 3 | Live API validation and development calibration |
-| Week 4 | Held-out experiments, ablations, failure analysis |
-
-Implemented: prototype and cross-platform CI/release workflows.
-
-Outstanding: live provider validation, evaluation tasks and results.
+- Implemented: event adapters, SQLite tracing, repetition rules and explicit interruption.
+- Decision-model adapters have mock coverage; live inference remains unverified.
+- Held-out evaluation has not been conducted.
+- Resource savings and effects on task success remain **unknown**.
 
 ---
 
-# Risks and limits
+# Threats to validity
 
 - False interruptions can damage otherwise successful work.
 - Progress may be hidden and telemetry incomplete.
@@ -197,6 +321,16 @@ The contribution is an empirical comparison under partial observability, not a u
 
 ---
 
+# Conclusion
+
+LoopGuard separates **observation**, **evidence assessment**, and **intervention** in agent execution.
+
+- A local monitor makes repeated outcomes observable and replayable.
+- Explicit policies govern interruption under incomplete telemetry.
+- Whether selective stopping reduces cost without unacceptable harm remains an empirical question.
+
+---
+
 # References
 
 - [Codex non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode)
@@ -204,4 +338,4 @@ The contribution is an empirical comparison under partial observability, not a u
 - [Provider configuration and CLI usage](https://github.com/jay-waves/comp7607a/blob/main/README.md)
 - [Paul Tol colour schemes](https://sronpersonalpages.nl/~pault/)
 
-<p class="eyebrow">PROPOSAL DEMO · NO MEASURED RESULTS</p>
+<p class="eyebrow">SYNTHETIC CHARTS · NO EMPIRICAL FINDINGS</p>
