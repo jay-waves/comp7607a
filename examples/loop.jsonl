@@ -1,0 +1,4 @@
+{"kind":"tool_end","tool":"shell","arguments":"pytest","result":"missing dependency","failed":true}
+{"kind":"usage","input_tokens":1000,"output_tokens":100,"generation_ms":2000,"context_tokens":800}
+{"kind":"tool_end","tool":"shell","arguments":"pytest","result":"missing dependency","failed":true}
+{"kind":"tool_end","tool":"shell","arguments":"pytest","result":"missing dependency","failed":true}
