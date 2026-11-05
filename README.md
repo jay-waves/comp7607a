@@ -109,6 +109,10 @@ A context restart retains the goal, code state, failure summary, and next hypoth
 
 **Planned capabilities:** metric-based triggers, reasoning-effort changes, and context restarts. The current implementation observes, warns, or stops an owned process, optionally after judge confirmation. No live agent results are claimed.
 
+**Planned task extensions:** SQL performance optimization (JOB / Effi-SQL) and MaxSAT optimization, measuring validated runtime improvements and feasible objective improvements respectively. The [experiment plan](PROPOSAL.md#experiments) outlines candidate sources and contamination controls: separate public baselines from freshly generated local instances, split by template/generator family, and validate references. These task environments and detailed protocols are not implemented; fresh instances reduce exposure risk without proving contamination-free evaluation.
+
+Task environments must remain lightweight and local: prefer embedded SQLite for suitable SQL tasks and small MaxSAT instances with a local checker. PostgreSQL is optional when benchmark compatibility requires it. Bound resource use and setup/reset costs; label engine ports or reduced workloads as adaptations rather than original benchmark results. See the environment requirements in the experiment plan.
+
 ## Small sandbox pilot
 
 [Sandbox instructions and task definitions](experiments/README.md) provide six

@@ -42,7 +42,20 @@ All three use the same question and trace window. API configuration is documente
 
 **Tasks.** Use the six [sandbox fixtures](experiments/README.md): recoverable/persistent service failure, consistent/conflicting requirements, and broken/already-correct code. The local service is inspectable and recovers by call count. Review valid blocker/clarification reports separately from executable success. This section supersedes the earlier stopping-policy pilot; [related work](RELATED_WORK.md) motivates the cost-control question.
 
-**Two stages.** Calibrate on separate development variants and freeze settings before evaluation. Run each condition on six configurations with three repetitions. Fix the base model, initial reasoning effort, image, prompt, permissions, and total budget; randomize condition order and reset the sandbox between runs.
+**Planned task extensions.** Add two candidate families beyond the sandbox pilot; environments, instance selection, budgets, and detailed protocols remain to be designed.
+
+| Family | Candidate sources | Task and progress evidence |
+| --- | --- | --- |
+| SQL performance optimization | [Join Order Benchmark](https://github.com/gregrahn/join-order-benchmark), [Effi-SQL](https://bird-critic.github.io/) | Improve query runtime while preserving correctness; track the best validated runtime under fixed execution conditions. |
+| MaxSAT optimization | [MaxSAT Evaluation instances](https://www.cs.toronto.edu/maxsat-lib/maxsat-instances/ms-evals/) | Improve a feasible assignment within a fixed budget; track objective value and gap to a certified optimum or bound, distinguishing these from best-known values. |
+
+Include both improvable and near-reference starting points. Task difficulty, NP-hardness, long context, or a temporary plateau alone does not establish wasted effort; separate agent activity from solver/database compute time. Compare continuation and context restart under the same total budget to investigate whether accumulated history affects recovery.
+
+**Training-data contamination.** Public benchmark exposure is unknown. Use public instances as reference baselines and separately evaluate newly generated local instances: vary SQL data distributions and query structure, and generate fresh MaxSAT structures and weights. Validate correctness, feasibility, and reference performance or bounds before evaluation. Split by source/template or generator family, not merely random seed, and keep evaluation instances and reference solutions out of agent-visible development material. Renaming identifiers or permuting variables alone does not remove structural overlap. Record provenance, generator versions, and seeds locally for reproducibility; these controls reduce risk but do not prove absence of contamination. Report public and fresh-instance results separately.
+
+**Lightweight environment requirement.** Prefer small, local, offline-capable task environments with minimal dependencies, bounded CPU/memory/disk use, and fast setup and reset. For SQL, start with Python's embedded SQLite where its semantics and query plans support the intended task; consider DuckDB only for a demonstrated analytical-query need. PostgreSQL is optional, used only when required by a selected benchmark or database-specific behavior, rather than a default service dependency. Ported or scaled-down workloads must be labeled as adaptations, with correctness and optimization opportunities revalidated; do not claim comparability with original-engine benchmark scores. For MaxSAT, prefer small local instances and a lightweight checker; add an external solver only when needed for reference solutions or bounds. Record environment size, setup time, and resource limits during pilot calibration, then freeze limits before evaluation. No hosted database or GPU should be required for the task environment; model inference is accounted for separately.
+
+**Two stages.** Calibrate on separate development variants and freeze settings before evaluation. For the sandbox pilot, run each condition on six configurations with three repetitions. Fix the base model, initial reasoning effort, image, prompt, permissions, and total budget; randomize condition order and reset the sandbox between runs.
 
 | Stage | Hold fixed | Experimental conditions |
 | --- | --- | --- |

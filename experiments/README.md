@@ -1,5 +1,17 @@
 # Small sandbox pilot
 
+This directory implements the six fixtures below. SQL performance optimization
+and MaxSAT optimization are planned extensions, not tasks available in this
+image. Candidate benchmarks and training-data contamination controls are outlined
+in the [experiment plan](../PROPOSAL.md#experiments); detailed protocols remain
+to be designed.
+
+Future task environments should preserve the pilot's lightweight, local setup:
+prefer embedded SQLite and small MaxSAT instances, minimize dependencies, and
+bound CPU, memory, disk, and setup/reset costs. PostgreSQL is optional only when
+the selected benchmark requires it. The [environment requirements](../PROPOSAL.md#experiments)
+also require revalidation and explicit labeling of adapted workloads.
+
 Build from the repository root (the experiment directory is the entire build context):
 
 ```bash
