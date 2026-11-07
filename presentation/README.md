@@ -1,6 +1,6 @@
 # LoopGuard presentation
 
-Independent reveal.js + React + TypeScript deck, built with Vite. Markdown supplies prose; visx supplies React SVG charts. Global CSS uses Paul Tol Muted palette tokens. No Vue or Slidev is required.
+Independent reveal.js + React + TypeScript deck, built with Vite. Markdown supplies prose, equations and comparison tables; Pele renders local Mermaid diagrams. Global CSS uses Paul Tol Muted palette tokens. No Vue or Slidev is required.
 
 Requires Node.js 22.12+ (or a newer supported Node release). Use npm here; Python tooling at the repository root continues to use uv.
 
@@ -16,9 +16,11 @@ Serve dist/ over HTTP. Relative asset paths and reveal.js hash navigation suppor
 
 ## Authoring
 
-Edit slides.md for prose and --- page separators. Notes: starts speaker notes. Widget markers select React slides: <!-- widget: observation -->, <!-- widget: tokens -->, <!-- widget: quality -->, <!-- widget: timeline -->. Their heading and notes come from the same Markdown page. react/main.tsx assembles the deck through the official @revealjs/react components; it does not mount React through HTML injection.
+Edit `slides.md` for prose, HTML formula notation, tables, `---` page separators and `Notes:` speaker notes. `react/main.tsx` assembles the deck through the official @revealjs/react components and mounts Mermaid slides through Pele. `styles/index.css` owns typography, spacing, palette aliases and the editorial layout.
 
-Edit react/ExperimentCharts.tsx for chart fixtures and styles/index.css for global rules and color aliases. The deck follows a final-presentation narrative: problem, method, evaluation protocol, illustrative comparisons, empirical status, and limitations. The counter and charts are synthetic demonstrations, not findings or forecasts. Source tables derive from the plotted data.
+The 23-slide English deck follows the current proposal: research objective → implemented monitor → six-task sandbox → two-stage live evaluation → SQL/MaxSAT extensions → status and limitations. It includes the shared-budget objective, repetition criterion, total-cost accounting and task-defined progress notation. The 126-run figure is a derived planning count (6 tasks × 3 repetitions × 7 conditions), not completed experiments; development and calibration are additional.
+
+`PROPOSAL.md` takes precedence over the earlier stopping-policy protocol retained in `experiments/README.md`. Replay is presented as diagnostic preparation, not evidence of outcomes after effort changes or restart. The deck distinguishes implemented, mock-tested, planned and unmeasured work. It contains no fabricated performance charts or provider price comparisons. Equations are explanatory notation, not newly implemented algorithms. Sources and interpretation caveats are recorded in speaker notes.
 
 ## GitHub Pages
 
@@ -32,7 +34,7 @@ One-time setup: repository Settings → Pages → Build and deployment → Sourc
 - Palette: https://sronpersonalpages.nl/~pault/
 - Pages: https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
 
-Typography uses Georgia throughout, with Times New Roman/serif fallbacks when Georgia is unavailable. DecisionComparison.tsx contains dated provider specifications and source links, separate from fabricated experiment fixtures. Candidate harnesses represent future adapter validation, not current support.
+Typography uses Georgia throughout, with Times New Roman/serif fallbacks when Georgia is unavailable. Candidate harnesses represent future adapter validation, not current support.
 
 ## Diagrams
 

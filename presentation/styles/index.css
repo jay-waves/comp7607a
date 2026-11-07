@@ -1,4 +1,4 @@
-/* Paul Tol Muted: palette primitives live only here. */
+/* Paul Tol Muted primitives; components use semantic aliases. */
 :root {
   --font-presentation: Georgia, "Times New Roman", serif;
   --tol-indigo: #332288;
@@ -23,65 +23,43 @@
   --color-surface: var(--color-background);
   --color-on-primary: var(--color-background);
 }
-.reveal {
-  background: var(--color-background);
-  color: var(--color-text);
-  font-family: var(--font-presentation);
-  font-size: 24px;
-  line-height: 1.5;
-  text-align: left;
-}
-.reveal h1 { color: var(--color-primary); font-size: 44px; font-weight: 700; }
-.reveal h2 { font-size: 30px; }
-.reveal a { color: var(--color-primary); text-decoration: underline; }
-.panel { border: 2px solid var(--color-border); border-top: 6px solid var(--color-accent); border-radius: 12px; padding: 24px; background: var(--color-surface); }
-.eyebrow { color: var(--color-primary); font-size: 16px; letter-spacing: .08em; }
-.actions { display: flex; gap: 16px; margin-top: 16px; }
-button { background: var(--color-primary); color: var(--color-on-primary); border: 2px solid var(--color-primary); border-radius: 6px; padding: 8px 16px; font: inherit; cursor: pointer; }
-button.secondary { background: var(--color-background); color: var(--color-primary); }
-button:focus-visible { outline: 3px solid var(--color-text); outline-offset: 4px; }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
-.reveal table { width: 100%; font-size: 21px; }
-.reveal th { color: var(--color-primary); }
-.reveal th, .reveal td { border-bottom: 1px solid var(--color-border); padding: 10px 12px; }
-:root {
-  --color-series-budget: var(--tol-indigo);
-  --color-series-rules: var(--tol-teal);
-  --color-series-judge: var(--tol-wine);
-  --color-series-false-stop: var(--tol-sand);
-}
-.experiment-chart { margin: 0; }
-.experiment-chart svg { width: 100%; max-height: 320px; overflow: visible; }
-.experiment-chart svg text { fill: var(--color-text); font: 15px var(--font-presentation); }
-.chart-grid { stroke: var(--color-border); stroke-width: 1; }
-.simulation-label { color: var(--color-danger); font-size: 16px; font-weight: 700; margin-bottom: 10px; }
-.chart-legend { display: flex; justify-content: center; gap: 24px; font-size: 16px; }
-.chart-legend span { display: inline-flex; align-items: center; gap: 8px; }
-.chart-legend i { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--color-text); }
-.false-stop-key { background: var(--color-series-false-stop); }
-.experiment-chart details { font-size: 14px; margin-top: 8px; }
-.experiment-chart summary { cursor: pointer; color: var(--color-primary); }
-.experiment-chart details[open] { max-height: 110px; overflow: auto; }
-.experiment-chart details table { font-size: 14px; }
-
 html, body, #root { height: 100%; margin: 0; background: var(--color-background); }
-.reveal .slides > section { box-sizing: border-box; padding: 24px 32px; }
+.reveal { background: var(--color-background); color: var(--color-text); font-family: var(--font-presentation); font-size: 23px; line-height: 1.42; text-align: left; }
+.reveal .slides > section { box-sizing: border-box; padding: 28px 38px; height: 100%; text-align: left; border-top: 3px solid var(--color-primary); }
+.reveal h1 { color: var(--color-primary); font-size: 40px; font-weight: 400; letter-spacing: -.035em; }
+.reveal h2 { font-size: 28px; font-weight: 400; color: var(--color-primary); }
+.reveal h1, .reveal h2 { margin: 0 0 24px; line-height: 1.12; }
 .reveal p, .reveal ul, .reveal table { margin: 18px 0; }
-.reveal ul { padding-left: 28px; }
+.reveal ul { padding-left: 26px; }
 .reveal li { margin: 12px 0; }
-.reveal h1, .reveal h2 { margin: 0 0 20px; line-height: 1.2; }
-.reveal .controls { color: var(--color-primary); }
-.reveal .progress { color: var(--color-accent); }
-.reveal .slide-number { color: var(--color-text); background: var(--color-background); }
-
-.decision-comparison { margin: 0; }
-.decision-comparison svg { width: 100%; height: 270px; }
-.decision-comparison svg text { fill: var(--color-text); font: 17px var(--font-presentation); }
-.decision-comparison figcaption, .spec-notes, .reveal .spec-caveat { font-size: 15px; }
-.spec-notes { display: flex; flex-wrap: wrap; gap: 8px 20px; }
-.reveal .spec-caveat { line-height: 1.35; margin-top: 12px; }
-
-/* Pele inherits presentation semantics; raw palette values stay in :root. */
+.reveal strong { color: var(--color-primary); font-weight: 700; }
+.reveal a { color: var(--color-primary); text-underline-offset: 4px; }
+.reveal .eyebrow { color: var(--color-primary); font-size: 13px; letter-spacing: .15em; margin: 0 0 23px; }
+.reveal .caption { font-size: 16px; line-height: 1.4; margin-top: 20px; }
+.reveal .takeaway { font-size: 22px; line-height: 1.4; border-left: 3px solid var(--color-accent); padding: 3px 0 3px 18px; margin-top: 24px; }
+.reveal .lead { font-size: 27px; line-height: 1.4; }
+.reveal table { width: 100%; border-collapse: collapse; font-size: 19px; line-height: 1.35; }
+.reveal th { color: var(--color-primary); font-weight: 700; border-bottom: 2px solid var(--color-primary); }
+.reveal th, .reveal td { padding: 13px 12px; text-align: left; vertical-align: top; }
+.reveal td { border-bottom: 1px solid var(--color-border); }
+.reveal td:first-child, .reveal th:first-child { padding-left: 0; }
+.reveal td:first-child { color: var(--color-primary); }
+.reveal .split { display: grid; grid-template-columns: 1fr 1fr; gap: 42px; margin: 32px 0 24px; }
+.reveal .split > div + div { border-left: 1px solid var(--color-border); padding-left: 32px; }
+.reveal .split h2 { padding-top: 10px; border-top: 2px solid var(--color-accent); margin-bottom: 20px; }
+.reveal .split p { font-size: 23px; }
+.reveal .equation { color: var(--color-primary); font-size: 27px; line-height: 1.65; padding: 15px 0; margin: 18px 0; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
+.reveal sub { font-size: .65em; }
+.reveal .closing-lines { margin: 34px 0; }
+.reveal .closing-lines p { font-size: 26px; margin: 25px 0; }
+.reveal .closing-lines span { color: var(--color-primary); font-size: 18px; margin-right: 20px; }
+/* A typographic cover, with no external fonts or decorative assets. */
+.reveal .slides > section:first-child { border-top-width: 10px; padding: 36px 54px; background: var(--color-primary); color: var(--color-on-primary); }
+.reveal .slides > section:first-child h1 { font-size: 94px; margin: 30px 0 16px; line-height: 1; }
+.reveal .slides > section:first-child h2 { font-size: 34px; line-height: 1.2; }
+.reveal .slides > section:first-child .caption { margin-top: 28px; font-size: 14px; }
+.reveal .progress { color: var(--color-accent); height: 3px; }
+/* Editable Mermaid source, rendered locally by Pele. */
 .diagram {
   --pele-bg: var(--color-background);
   --pele-fg: var(--color-text);
@@ -97,39 +75,27 @@ html, body, #root { height: 100%; margin: 0; background: var(--color-background)
   --pele-error: var(--color-danger);
   --pele-font: var(--font-presentation);
   --pele-font-mono: var(--font-presentation);
-  --pele-radius: 8px;
-  --pele-series-1: var(--tol-indigo);
-  --pele-series-2: var(--tol-teal);
-  --pele-series-3: var(--tol-wine);
-  --pele-series-4: var(--tol-green);
-  --pele-series-5: var(--tol-purple);
-  --pele-series-6: var(--tol-olive);
-  --pele-series-7: var(--tol-rose);
-  --pele-series-8: var(--tol-cyan);
-  width: 100%; height: 355px;
+  --pele-radius: 0;
+  width: 100%; height: 290px;
   display: flex; align-items: center; justify-content: center;
 }
-.diagram .pele { max-width: 100%; max-height: 355px; }
-.diagram-figure { margin: 0; }
-.diagram-figure details { font-size: 15px; }
+.diagram .pele { max-width: 100%; max-height: 290px; }
+.diagram-figure { margin: 0; position: relative; }
+.diagram-figure details { font-size: 13px; }
 .diagram-figure summary { color: var(--color-primary); cursor: pointer; }
-.diagram-figure pre { font: 14px var(--font-presentation); white-space: pre-wrap; max-height: 100px; overflow: auto; }
-
-.deck-navigation {
-  position: fixed; right: 20px; bottom: 18px; z-index: 40;
-  display: flex; align-items: center; gap: 4px;
-  padding: 3px 5px; border: 1px solid var(--color-border); border-radius: 8px;
-  background: var(--color-background); color: var(--color-primary);
-  font: 13px var(--font-presentation);
-}
-.deck-navigation button {
-  display: grid; place-items: center; width: 28px; height: 28px;
-  padding: 0; border: 0; border-radius: 5px;
-  background: transparent; color: inherit;
-}
+.diagram-figure details[open] { position: absolute; inset: 0; z-index: 2; background: var(--color-background); border: 1px solid var(--color-border); padding: 12px; overflow: auto; }
+.diagram-figure pre { font: 16px var(--font-presentation); white-space: pre-wrap; }
+.deck-navigation { position: fixed; right: 20px; bottom: 16px; z-index: 40; display: flex; align-items: center; gap: 4px; padding: 3px 5px; background: var(--color-background); color: var(--color-primary); font: 13px var(--font-presentation); }
+.deck-navigation button { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; }
 .deck-navigation button:hover:not(:disabled) { background: var(--color-unknown); }
 .deck-navigation button:disabled { opacity: .25; cursor: default; }
 .deck-navigation svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.5; }
-.deck-navigation output { min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+.deck-navigation output { min-width: 52px; text-align: center; font-variant-numeric: tabular-nums; }
 .deck-navigation output span { color: var(--color-text); }
-@media print { .deck-navigation { display: none; } }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+@media print { .deck-navigation, .diagram-figure details { display: none; } }
+
+.reveal .slides > section:first-child :is(h1,h2,.eyebrow) { color: var(--color-on-primary); }
+.reveal .slides > section:nth-last-child(2) { background: var(--color-primary); color: var(--color-on-primary); }
+.reveal .slides > section:nth-last-child(2) :is(h1,.eyebrow,.closing-lines span) { color: var(--color-on-primary); }

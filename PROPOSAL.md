@@ -108,8 +108,8 @@ The prototype and cross-platform CI/release workflows are implemented. Six sandb
 
 ## Presentation
 
-The [presentation](presentation/README.md) communicates the method and evaluation framework independently of this proposal's schedule. Its synthetic charts illustrate the intended analyses and provide no empirical evidence.
+The [presentation](presentation/README.md) communicates the method and evaluation framework independently of this proposal's schedule. It follows the two-stage live evaluation design, with equations, task and condition comparisons, and explicitly planned SQL/MaxSAT extensions. The derived 126-run pilot count excludes development and calibration; no empirical results are presented.
 
 Candidate extension environments are DeepSeek Harness, Grok Build, and Cursor Agent CLI. Codex remains the implemented adapter and primary evaluation scope; candidate integrations and cross-harness experiments are not yet implemented.
 
-The presentation uses Pele to render Mermaid architecture, decision-flow, evidence-pipeline, sequence, and evaluation diagrams with the same Georgia and Paul Tol Muted styling. These diagrams describe implemented monitoring semantics or explicitly planned evaluation.
+The presentation uses Pele to render Mermaid architecture and planned context-restart diagrams with the same Georgia and Paul Tol Muted styling. These diagrams describe implemented monitoring semantics or explicitly planned evaluation.
